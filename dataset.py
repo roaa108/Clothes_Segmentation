@@ -1,9 +1,8 @@
-
 import os
 import numpy as np
 import torch
 from PIL import Image
-from torch.utils.data import Dataset, DataLoader, Subset
+from torch.utils.data import Dataset, DataLoader
 
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
@@ -80,18 +79,11 @@ class ATRClothes(Dataset):
         return sample["image"], sample["mask"].long(), name
 
 
-def atr_dataloader(data_root="./data/atr", image_size=256, batch_size=16,
-                   validation_ratio=0.1, seed=42, num_workers=2):
-   
-    train_source = ATRClothes(data_root, "train", train_transform(image_size))
-    val_source = ATRClothes(data_root, "train", eval_transform(image_size))
+def atr_dataloader(data_root="./data/atr", image_size=256, batch_size=16, num_workers=2):
+    
+    train_data = ATRClothes(data_root, "train", train_transform(image_size))
+    val_data = ATRClothes(data_root, "validation", eval_transform(image_size))
     test_data = ATRClothes(data_root, "test", eval_transform(image_size))
-
-    indices = np.random.default_rng(seed).permutation(len(train_source))
-    validation_count = int(len(indices) * validation_ratio)
-
-    val_data = Subset(val_source, indices[:validation_count])
-    train_data = Subset(train_source, indices[validation_count:])
 
     train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True)
     val_loader = DataLoader(val_data, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=True)
