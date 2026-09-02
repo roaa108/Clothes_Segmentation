@@ -9,7 +9,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 data_root = "./data/atr"
 image_size = 256
 batch_size = 16
-epochs = 15
+epochs = 40
 
 LR = 1e-4
 
@@ -17,7 +17,6 @@ train_loader, validation_loader, test_loader = atr_dataloader(
     data_root=data_root,
     image_size=image_size,
     batch_size=batch_size,
-    validation_ratio=0.1
 )
 
 model = ClothesSegmenter().to(device)
